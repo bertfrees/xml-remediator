@@ -1,22 +1,104 @@
+
+
+/* */
 .App {
   text-align: center;
+  height: 100%;
+  width: 100%;
+
 }
 
 .App-logo {
-  height: 40vmin;
+  height: 10vmin;
 }
 
+
+/* Application first level css */
 .App-header {
+  width: 100%;
   background-color: #282c34;
-  min-height: 100vh;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  flex-direction: row;
+  align-items: left;
+  justify-content: left;
+  font-size: 14pt;
   color: white;
+  z-index: 1;
+}
+
+.App-frame{
+    position:absolute;
+    top:35px;
+    bottom: 35px;
+    left: 0;
+    right: 0;
+
+}
+
+.App-footer{
+  position: absolute;
+  bottom: 0;
+  left:0;
+  right:0;
+  height: 35px;
 }
 
 .App-link {
   color: #09d3ac;
+}
+
+/*
+.App-input-viewer {
+  position: absolute;
+  top:0;
+  bottom: 0;
+  width: 40%;
+  -webkit-transition: 0.5s;
+  -moz-transition: 0.5s;
+  -o-transition: 0.5s;
+  transition: 0.5s;
+} */
+
+.App-remediation {
+  position: absolute;
+  top:0;
+  bottom: 0;
+  margin-left: 0%;
+  width: 30%;
+}
+
+
+.App-output-viewer {
+  position: absolute;
+  top:0;
+  bottom: 0;
+  width: 70%;
+  margin-left: 30%;
+  -webkit-transition: 0.5s;
+  -moz-transition: 0.5s;
+  -o-transition: 0.5s;
+  transition: 0.5s;
+}
+
+.App-button {
+  background-color: #282c34;
+  color: white;
+  border: none;
+  padding: 5px;
+  margin-left: 15px; 
+  transition: 0.3s;
+  border-radius: 50%;
+
+}
+.App-button.rotate{
+  transform: rotate(90deg);
+}
+
+.App-button:hover,  .App-button:focus {
+    color: #bbbbbb;
+    cursor: pointer;
+}
+
+.App-subframe-title {
+  margin: 5px;
 }
