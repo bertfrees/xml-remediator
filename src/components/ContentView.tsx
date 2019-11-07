@@ -54,10 +54,6 @@ export class ContentView extends React.Component<ContentViewProps,{}> {
         allowEdition:false
     }
     
-    constructor(props:ContentViewProps){
-        super(props);
-    }
-
     render(){
         if(this.props.content !== ""){
             let contentToRender = this.props.content;
@@ -67,12 +63,14 @@ export class ContentView extends React.Component<ContentViewProps,{}> {
             //    
             //    console.log(contentToRender);
             //}
-            return <iframe src={
-                    "data:" + this.props.mimetype + ";base64, " + 
-                    uint8ArrayToBase64(new TextEncoder().encode(contentToRender))} 
+            return (
+                <iframe 
+                    title="html_view"
+                    src={ "data:" + this.props.mimetype + ";base64, " + uint8ArrayToBase64(new TextEncoder().encode(contentToRender))} 
                     height="100%" width="100%"
                     contentEditable={true}
-                ></iframe>;
+                ></iframe>
+            );
         } else return <p>Please load a document to start.</p>
         
     }

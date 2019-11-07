@@ -92,7 +92,8 @@ class App extends React.Component {
         input_content: "",
         output_content: "",
         applicable_remediations: new Array<Remediation>(),
-        applied_remediations_stack: new Array<Remediation>()
+        applied_remediations_stack: new Array<Remediation>(),
+        raw_viewer:<p>No viewer</p>
     };
 
     fileInput: any;
@@ -133,11 +134,8 @@ class App extends React.Component {
                     let content = event.target.result;
                     // Compute remediation
                     // Example remediation found in a sample : replace p with class "CN" by <h1>
-                    let remediations = this.state.applicable_remediations;
-                    remediations.push({
-                        pattern:"//p[contains(@class,'CN')]",
-                        remapping:"h1"
-                    });
+                    let remediations = new Array<Remediation>();
+                    remediations.push(new Remediation("//*[contains(@class,'CN')]","h1","rename(\"h1\")"));
                     
                     // original content
                     this.setState({
@@ -161,36 +159,43 @@ class App extends React.Component {
     undoLastRemediation(){
         let stack = this.state.applied_remediations_stack;
         stack.pop();
-        this.onRemediationsStackUpdate(stack);
+        this.updateRemediationsStack(stack);
     }
 
     /**
      * Apply a remediation
      */
-    onRemediationApplied(remediation:Remediation){
+    onRemediationApplied(remediation_to_apply:Remediation){
         // push remediation on application stack
         let stack = this.state.applied_remediations_stack;
-        stack.push(remediation);
-        this.onRemediationsStackUpdate(stack);
+        stack.push(remediation_to_apply);
+        this.updateRemediationsStack(stack);
+
+        
+        
     }
 
     /**
      * general function call to update the result and the remediation stack
+     * @param {Array<Remediation>} new_remediations_stack new stack of the remediations to applied on input content to compute the output content
      */
-    onRemediationsStackUpdate(new_remediation_stack:Array<Remediation>){
+    updateRemediationsStack(new_remediations_stack:Array<Remediation>){
         let currentContent = this.state.input_content;
         if(this.state.input_file){
            let mimetype = getMimetypeAs<SupportedType>(this.state.input_content);
-            new_remediation_stack.forEach(remediation => {
-                // apply remediation on content
-                let document = new window.DOMParser().parseFromString(this.state.input_content, mimetype);
-                console.log(document);
+            new_remediations_stack.forEach(remediation => {
+                currentContent = remediation.applyOn(currentContent);
             });
         }
+
+        console.log("Remediations applied : ");
+        console.log(new_remediations_stack);
+        console.log("result : ");
+        console.log(currentContent);
         
         // update stack and content output content
         this.setState({
-            applied_remediations_stack:new_remediation_stack,
+            applied_remediations_stack:new_remediations_stack,
             output_content:currentContent
         });
     }
@@ -216,26 +221,15 @@ class App extends React.Component {
             this.state.raw_mode === true ?
                 "Switch to text viewer" :
                 "Switch to raw viewer";
-        let input_viewer;
+        
         let remediations_viewer;
-        let displayedFileName = "";
         if (this.state.raw_mode === true) {
-            let fileExtension = displayedFileName.substring(displayedFileName.lastIndexOf('.') + 1);
-            /*
-            input_viewer =
-                <AceEditor
-                    width="auto"
-                    mode={getMode(this.state.input_file)}
-                    defaultValue="Please upload an xhtml file to start"
-                    value={this.state.input_content}
-                    theme="monokai"
-                    name="input_viewer"
-                    editorProps={{ $blockScrolling: true }}
-                />; */
+            let filename = this.state.input_file === "" ? "expected.xhtml" : this.state.input_file;
+            
             remediations_viewer =
                 <AceEditor
                     width="auto"
-                    mode={getMode(this.state.input_file)}
+                    mode={getMode(filename)}
                     defaultValue="Please upload an xhtml file to start"
                     value={this.state.output_content}
                     theme="monokai"
@@ -244,11 +238,7 @@ class App extends React.Component {
                 />;
 
         } else {
-            // TODO could be cool to sync scrolling between the 2 viewer
-            /*input_viewer = <ContentView 
-                    content={this.state.input_content} 
-                    mimetype="application/xhtml+xml"
-                />; */
+            
             remediations_viewer = <ContentView
                     content={this.state.output_content}
                     mimetype="application/xhtml+xml"
