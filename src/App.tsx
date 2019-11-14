@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 
 import { FileInput } from './components/FileInput';
-import { ContentView } from './components/ContentView';
+import ContentView from './components/ContentView';
 
 
 // react-toastify for notifications
@@ -79,7 +79,7 @@ function getMimetypeAs<T>(filepath:string):T{
 }
 
 
-class App extends React.Component {
+export default class App extends React.Component {
 
     state = {
         raw_mode: false,
@@ -135,7 +135,7 @@ class App extends React.Component {
                     // Compute remediation
                     // Example remediation found in a sample : replace p with class "CN" by <h1>
                     let remediations = new Array<Remediation>();
-                    remediations.push(new Remediation("//*[contains(@class,'CN')]","h1","rename(\"h1\")"));
+                    remediations.push(new Remediation("//*[contains(@class,'CN')]","rename(\"h1\")"));
                     
                     // original content
                     this.setState({
@@ -308,42 +308,3 @@ class App extends React.Component {
     }
 }
 
-export default App;
-
-
-/* code backup
-
-    showDrawer() {
-        let newstate = this.state;
-        if (newstate.input_viewer_css.length <= 1) {
-            newstate.drawer_button_css.push("rotate");
-            newstate.input_viewer_css.push("show");
-            newstate.output_viewer_css.push("with-drawer");
-        }
-        this.setState(newstate);
-    }
-
-    hideDrawer() {
-        let newstate = this.state;
-        if (newstate.input_viewer_css.length > 1) {
-            newstate.input_viewer_css.pop();
-            newstate.drawer_button_css.pop();
-            newstate.output_viewer_css.pop();
-        }
-        this.setState(newstate);
-    }
-
-
-drawer button
-<button className={this.state.drawer_button_css.join(" ")}
-                        onClick={(event: any) => {
-                            this.state.input_viewer_css.length > 1 ?
-                                this.hideDrawer() :
-                                this.showDrawer();
-                        }} >&#9776;</button>
-
-input viewer 
-<div className={this.state.input_viewer_css.join(' ')}>
-                        <p className="App-subframe-title">Original content</p>
-                        {input_viewer}
-                    </div> */

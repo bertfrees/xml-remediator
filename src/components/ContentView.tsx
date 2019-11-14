@@ -1,45 +1,19 @@
 import React from 'react';
 
-const base64abc = (() => {
-    let abc = [],
-        A = "A".charCodeAt(0),
-        a = "a".charCodeAt(0),
-        n = "0".charCodeAt(0);
-    for (let i = 0; i < 26; ++i) {
-        abc.push(String.fromCharCode(A + i));
-    }
-    for (let i = 0; i < 26; ++i) {
-        abc.push(String.fromCharCode(a + i));
-    }
-    for (let i = 0; i < 10; ++i) {
-        abc.push(String.fromCharCode(n + i));
-    }
-    abc.push("+");
-    abc.push("/");
-    return abc;
-})();
+import Base64 from './Base64';
 
-function uint8ArrayToBase64(bytes:Uint8Array){
-    let result = '', i, l = bytes.length;
-    for (i = 2; i < l; i += 3) {
-        result += base64abc[bytes[i - 2] >> 2];
-        result += base64abc[((bytes[i - 2] & 0x03) << 4) | (bytes[i - 1] >> 4)];
-        result += base64abc[((bytes[i - 1] & 0x0F) << 2) | (bytes[i] >> 6)];
-        result += base64abc[bytes[i] & 0x3F];
-    }
-    if (i === l + 1) { // 1 octet missing
-        result += base64abc[bytes[i - 2] >> 2];
-        result += base64abc[(bytes[i - 2] & 0x03) << 4];
-        result += "==";
-    }
-    if (i === l) { // 2 octets missing
-        result += base64abc[bytes[i - 2] >> 2];
-        result += base64abc[((bytes[i - 2] & 0x03) << 4) | (bytes[i - 1] >> 4)];
-        result += base64abc[(bytes[i - 1] & 0x0F) << 2];
-        result += "=";
-    }
-    return result;
-}
+/* TODO : 
+- Replace iframe content view by html integration in react
+    - when viewing each text block, display the node stack on the left
+- For nodes and remediation, 
+    - add a "depency" arg that states what node or what remediation is required
+- Create buttons and/or actions for the following nodes :
+    - <p> with a class : allow to rename one or all corresponding node with heading, and to keep class or not
+    - <span> with class : allow to rename, allow to add a "xml:lang"
+    - <img> : allow to edit the alt, allow to wrap in a figure
+    - <figcaption> : allow to edit content
+*/
+
 
 interface ContentViewProps {
     content:string,
@@ -47,7 +21,7 @@ interface ContentViewProps {
     allowEdition:boolean
 }
 
-export class ContentView extends React.Component<ContentViewProps,{}> {
+export default class ContentView extends React.Component<ContentViewProps,{}> {
     static defaultProps:ContentViewProps = {
         content:"",
         mimetype:"text/plain",
@@ -66,7 +40,7 @@ export class ContentView extends React.Component<ContentViewProps,{}> {
             return (
                 <iframe 
                     title="html_view"
-                    src={ "data:" + this.props.mimetype + ";base64, " + uint8ArrayToBase64(new TextEncoder().encode(contentToRender))} 
+                    src={ "data:" + this.props.mimetype + ";base64, " + Base64.encodeString(contentToRender)} 
                     height="100%" width="100%"
                     contentEditable={true}
                 ></iframe>

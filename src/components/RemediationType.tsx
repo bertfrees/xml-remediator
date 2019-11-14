@@ -1,9 +1,5 @@
+import * as xmlserializer from 'xmlserializer';
 
-
-//export default interface Remediation{
-//    pattern:string,
-//    remapping:string
-//}
 
 /**
  * Remediation object interface
@@ -15,22 +11,21 @@
 export default class Remediation {
     public pattern: string;
 
-    public remapping: string;
-    
     // Proposition : actions as function calls in a string 
-    // "rename('<h1 attr=\"blabla\">');wrap(''"
+    // "rename('<h1 attr=\"blabla\">');"
     public actions:string;
 
-    constructor(pattern:string,remapping:string, actions:string = ""){
+    // Content used and updated by remediation functions (rename, unwrap and wrap)
+    private content_document:Document = new Document();
+    private nodes_to_remediate:Array<Node> = new Array<Node>();
+
+    constructor(pattern:string,actions:string){
         this.pattern = pattern;
-        this.remapping = remapping;
         this.actions = actions;
     }
 
-    // Content used and updated by remediation functions (rename, unwrap and wrap)
     
-    private content_document:Document = new Document();
-    private nodes_to_remediate:Array<Node> = new Array<Node>();
+
     /**
      * For the current document and selected node to remediate, renames all the node in the document
      * @param new_tag the tag used to replace the pattern
@@ -124,26 +119,21 @@ export default class Remediation {
             this.nodes_to_remediate.push(match.snapshotItem(len)!);
         }
 
-        //this.actions = "rename(\""+this.remapping+"\");";
         
-        if(this.actions.length > 0){
-            // rebind functions call in actions to this.
-            let rewritedFunctionCall = "";
-            this.actions.split(';').forEach((call)=>{
-                rewritedFunctionCall += call.length > 0 ? "this."+call : "";
-            });
-            let actionsCall = new Function(rewritedFunctionCall).bind(this);
-            actionsCall();
-        } else {
-            // Apply actions here
-            this.rename(this.remapping);
-        }
+        // rebind functions call in actions to this.
+        let rewritedFunctionCall = "";
+        this.actions.split(';').forEach((call)=>{
+            rewritedFunctionCall += call.length > 0 ? "this."+call : "";
+        });
+        let actionsCall = new Function(rewritedFunctionCall).bind(this);
+        actionsCall();
+        
         
         
         // Convert back the document to xhtml
-        let serializer = new XMLSerializer();
-        console.log(serializer.serializeToString(this.content_document)); 
+        //let serializer = new XMLSerializer();
+        //console.log(serializer.serializeToString(this.content_document)); 
         
-        return serializer.serializeToString(this.content_document);
+        return xmlserializer.serializeToString(this.content_document);
     }
 }
