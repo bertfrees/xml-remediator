@@ -17,6 +17,7 @@ export default class ListIterator<T> implements IterableIterator<T>{
     public done:boolean;
 
     constructor(from:ListIterator<T>|ListIteratorInterface<T>) {
+        
         this.supplier = from.supplier;
         this.list = from.list || [];
         this.index = from.index || 0;

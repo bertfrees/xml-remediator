@@ -2,13 +2,14 @@ import React from 'react';
 import './App.css';
 
 import { FileInput } from './components/FileInput';
-import ContentView from './components/ContentView';
+//import ContentView from './components/ContentView';
 
 
 // react-toastify for notifications
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+/*
 import AceEditor from 'react-ace';
 import 'brace/mode/javascript';
 import 'brace/mode/xml';
@@ -19,9 +20,15 @@ import 'brace/mode/plain_text';
 
 import 'brace/theme/github';
 import 'brace/theme/monokai';
+*/
 
-import Remediation from './components/RemediationType';
-import RemediationView from './components/RemediationView';
+import Remediation from './components/Remediation';
+//import RemediationView from './components/RemediationView';
+
+import test_document from "./temp/document.json";
+import Box from './components/Box';
+import BoxTreeWalker from './components/BoxTreeWalker';
+
 
 /**
  * Hash of available ace modes per extension
@@ -93,7 +100,8 @@ export default class App extends React.Component {
         output_content: "",
         applicable_remediations: new Array<Remediation>(),
         applied_remediations_stack: new Array<Remediation>(),
-        raw_viewer:<p>No viewer</p>
+        raw_viewer:<p>No viewer</p>,
+        root_box:Box.parse(JSON.stringify(test_document))
     };
 
     fileInput: any;
@@ -201,28 +209,78 @@ export default class App extends React.Component {
     }
 
 
-    /**
-     * Application structure
-     *  given an input document (for now xhtml)
-     *  - display the original document on the right
-     *  - display the remediation list on the center
-     *    - for each remediation
-     *      - if remediation is a structural proposal, use a checkbox like validation
-     *      - if remediation is missing content warning, use a text-area validation 
-     *  - display the remediation result on the right
-     *    - result displayed is recomputed 
-     * 
-     * display can be done with 2 mode : 
-     * - Raw mode based on Ace editor
-     * - html preview mode computed by xslt transform
-     */
     render() {
         var switchingView: String =
             this.state.raw_mode === true ?
                 "Switch to text viewer" :
                 "Switch to raw viewer";
+
+        let rootBox = new Box({
+            attributes:this.state.root_box.props.attributes,
+                                type:this.state.root_box.props.type,
+                                name:this.state.root_box.props.name,
+                                children:this.state.root_box.props.children
+        });
+        let walker:BoxTreeWalker = new BoxTreeWalker(rootBox);
         
-        let remediations_viewer;
+        return (
+            <div className="App">
+                <ToastContainer />
+                <header className="App-header">
+
+                    <FileInput className="App-button"
+                        mimetype={getMimetypeAs<string>("expect.xhtml")}
+                        label="Input document : "
+                        onFileSubmit={(event: any) => { 
+                            this.handleFileSubmit(event) 
+                        }}
+                        eventRef={this.fileInput} />
+                    
+                    <button className="App-button"
+                        onClick={(event: any) => {
+                            this.changeEditorView();
+                        }} >{switchingView}</button>
+                    
+                </header>
+                <main className="App-frame">
+                    <table className="boxlist">
+                        <tr>
+                            <th className="boxlist__data">Block data</th>
+                            <th className="boxlist__content">Textual content</th>
+                        </tr>
+                        <Box attributes={this.state.root_box.props.attributes}
+                                type={this.state.root_box.props.type}
+                                name={this.state.root_box.props.name}
+                                children={this.state.root_box.props.children}/>
+                    </table>
+                </main>
+                <footer className="App-footer" />
+            </div>
+        );
+    }
+}
+
+
+
+/**
+ * Application structure
+ *  given an input document (for now xhtml)
+ *  - display the original document on the right
+ *  - display the remediation list on the center
+ *    - for each remediation
+ *      - if remediation is a structural proposal, use a checkbox like validation
+ *      - if remediation is missing content warning, use a text-area validation 
+ *  - display the remediation result on the right
+ *    - result displayed is recomputed 
+ * 
+ * display can be done with 2 mode : 
+ * - Raw mode based on Ace editor
+ * - html preview mode computed by xslt transform
+ */
+
+/** Code backup
+ * 
+ let remediations_viewer;
         if (this.state.raw_mode === true) {
             let filename = this.state.input_file === "" ? "expected.xhtml" : this.state.input_file;
             
@@ -245,7 +303,10 @@ export default class App extends React.Component {
                     allowEdition={true}
                 />;
         }
-        // For each posible remediation
+
+
+
+// For each posible remediation
         let remediationsViews = new Array<JSX.Element>();
         this.state.applicable_remediations.forEach( remediation =>{
             var isApplied = false;
@@ -267,27 +328,10 @@ export default class App extends React.Component {
             );
         });
         let canUndo:boolean = this.state.applied_remediations_stack.length > 0;
-        return (
-            <div className="App">
-                <ToastContainer />
-                <header className="App-header">
 
-                    <FileInput className="App-button"
-                        mimetype={getMimetypeAs<string>("expect.xhtml")}
-                        label="Input document : "
-                        onFileSubmit={(event: any) => { 
-                            this.handleFileSubmit(event) 
-                        }}
-                        eventRef={this.fileInput} />
-                    
-                    <button className="App-button"
-                        onClick={(event: any) => {
-                            this.changeEditorView();
-                        }} >{switchingView}</button>
-                    
-                </header>
-                <main className="App-frame">
-                    <div className="App-remediation">
+
+
+<div className="App-remediation">
                         <p className="App-subframe-title">Possible remediations</p>
                         <button disabled={!canUndo}
                         onClick={(event: any) => {
@@ -300,11 +344,7 @@ export default class App extends React.Component {
                         <p className="App-subframe-title">Remediations preview</p>
                         {remediations_viewer}
                     </div>
-                    
-                </main>
-                <footer className="App-footer" />
-            </div>
-        );
-    }
-}
 
+
+
+ */

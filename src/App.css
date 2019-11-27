@@ -32,6 +32,7 @@
     bottom: 35px;
     left: 0;
     right: 0;
+    overflow: scroll;
 
 }
 
@@ -101,4 +102,16 @@
 
 .App-subframe-title {
   margin: 5px;
+}
+
+.boxlist {
+  overflow: scroll;
+}
+
+.boxlist__data{
+  width: 40%;
+}
+
+.boxlist__content{
+  width:auto;
 }

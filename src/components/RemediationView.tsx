@@ -1,5 +1,5 @@
 import React from 'react';
-import Remediation from './RemediationType'
+import Remediation from './Remediation'
 
 /* TODO and NOTES
 it seems more appropriate to consider the whole remediation list as a kind of stack
@@ -27,7 +27,7 @@ export default class RemediationView extends React.Component<RemediationViewProp
     render(){
         
         return <div>
-                <label>Remap {this.props.remediation.remapping} </label>
+                <label>{this.props.remediation.pattern} : {this.props.remediation.actions} </label>
                 <button disabled={this.props.isApplied}
                     onClick={(event:any) => {
                         if(!this.props.isApplied){

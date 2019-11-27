@@ -1,6 +1,2 @@
 
-export default class ConcurrentModificationException extends Error{
-    constructor(message?:string){
-        super(message);
-    }
-}
+export default class ConcurrentModificationException extends Error{}

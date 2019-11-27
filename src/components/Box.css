@@ -1,0 +1,10 @@
+
+.box__data{
+    border: 2px solid turquoise;
+    text-align: right;
+}
+
+.box__content{
+    border: 2px solid turquoise;
+    text-align: left;
+}

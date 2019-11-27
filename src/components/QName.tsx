@@ -6,7 +6,7 @@
  * @property {public string|undefined} prefix - prefix associated to the namespace
  * @property {string} localPart -  local name of the node
  */
-interface QNameInterface{
+export interface QNameInterface{
     namespace?: string,
     prefix?: string,
     localPart: string
@@ -30,4 +30,11 @@ export default class QName {
 	    this.prefix = from.prefix;
     }
 
+    public static DIV:QName = new QName({
+        namespace: "http://www.w3.org/1999/xhtml",
+        localPart: "div",
+        prefix: ""
+    });
+
 }
+

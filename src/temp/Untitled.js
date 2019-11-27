@@ -4,51 +4,53 @@ function QName(from) {
 	this.prefix = from.prefix;
 }
 
-var ListIterable = (function() {
-	class ListIterator {
-		constructor(from) {
-			this.supplier = from.supplier;
-			this.list = from.list || [];
-			this.index = from.index || 0;
-			this.done = from.done || false;
-		}
-		hasNext() {
-			if (this.index < this.list.length)
-				return true;
-			if (this.done)
-				return false;
-			var next = this.supplier.next();
-			if (next.done) {
-				this.done = true;
-				return false;
-			} else {
-				this.list.push(next.value);
-				return true;
-			}
-		}
-		hasPrevious() {
-			return this.index > 0;
-		}
-		next() {
-			if (!this.hasNext())
-				return {done: true};
-			else
-				return {
-					done: false,
-					value: this.list[this.index++]};
-		}
-		previous() {
-			if (!this.hasPrevious())
-				return {done: true};
-			else
-				return {
-					done: false,
-					value: this.list[--this.index]};
-		}
-		clone() {
-			return new ListIterator(this);
+class ListIterator {
+	constructor(from) {
+		this.supplier = from.supplier;
+		this.list = from.list || [];
+		this.index = from.index || 0;
+		this.done = from.done || false;
+	}
+	hasNext() {
+		if (this.index < this.list.length)
+			return true;
+		if (this.done)
+			return false;
+		var next = this.supplier.next();
+		if (next.done) {
+			this.done = true;
+			return false;
+		} else {
+			this.list.push(next.value);
+			return true;
 		}
 	}
+	hasPrevious() {
+		return this.index > 0;
+	}
+	next() {
+		if (!this.hasNext())
+			return {done: true};
+		else
+			return {
+				done: false,
+				value: this.list[this.index++]};
+	}
+	previous() {
+		if (!this.hasPrevious())
+			return {done: true};
+		else
+			return {
+				done: false,
+				value: this.list[--this.index]};
+	}
+	clone() {
+		return new ListIterator(this);
+	}
+}
+
+var ListIterable = (function() {
+	
 	return {
 		from: function(supplier) {
 			var list = [];
@@ -467,7 +469,7 @@ class BoxTreeWalker {
 
 // **********************************************************************
 
-class CanNotPerformTransformationException extends Error {}
+//class CanNotPerformTransformationException extends Error {}
 
 var isBlockAndHasNoBlockChildren = (b => b.isBlockAndHasNoBlockChildren);
 
