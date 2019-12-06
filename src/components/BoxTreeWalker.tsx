@@ -378,25 +378,14 @@ export default class BoxTreeWalker {
 		//assertThat(this.current.props.cssprops && this.current.props.cssprops.display == "table-row");
 		this.renameCurrent(DIV);
 		assertThat(this.nextSibling().done);
-		let colgroupPresent = false;
-		if (!this.previousSibling().done) {
-			//assertThat(this.current.props.cssprops && this.current.props.cssprops.display == "table-column-group");
-			assertThat(this.previousSibling().done);
-			colgroupPresent = true;
-		}
+		assertThat(this.previousSibling().done);
 		assertThat(!this.parent().done);
-		if (!colgroupPresent ) { // && this.current.props.cssprops && this.current.props.cssprops.display == "table-row-group"
+		if (true) { // this.current.props.cssprops && this.current.props.cssprops.display == "table-row-group"
 			assertThat(this.nextSibling().done);
-			if (!this.previousSibling().done) {
-				//assertThat(this.current.props.cssprops && this.current.props.cssprops.display == "table-column-group");
-				assertThat(this.previousSibling().done);
-				colgroupPresent = true;
-			}
+			assertThat(this.previousSibling().done);
 			assertThat(!this.parent().done);
 		}
 		//assertThat(this.current.props.cssprops && this.current.props.cssprops.display == "table");
-		if (colgroupPresent)
-			this.deleteFirstChild();
 		this.firstChild();
 		this.unwrapParent();
 		let table = this.subTree();
