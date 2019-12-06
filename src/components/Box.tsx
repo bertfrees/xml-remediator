@@ -26,6 +26,7 @@ export interface BoxInterface {
 	name?:QName,
 	attributes:Array<Attribute>,
 	text?:string,
+	isReplacedElement:boolean,
 	children:Array<Box>,
 	cssprops?:Properties
 }
