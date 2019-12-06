@@ -354,7 +354,8 @@ export default class BoxTreeWalker {
 		return count;
 	}
 
-	transformSingleRowTable(firstBlockIdx:number, blockCount:number) {
+	transformSingleRowTable(firstBlockIdx:number, blockCount:number) : BoxTreeWalker {
+		this.root();
 		this.nthBlock(firstBlockIdx);
 		while (true) {
 			assertThat(this.previousSibling().done);
@@ -390,5 +391,6 @@ export default class BoxTreeWalker {
 		this.unwrapParent();
 		let table = this.subTree();
 		assertThat(count(table, isBlockAndHasNoBlockChildren) == blockCount);
+		return this;
 	}
 }
