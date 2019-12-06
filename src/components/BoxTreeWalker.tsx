@@ -395,4 +395,57 @@ export default class BoxTreeWalker {
 		assertThat(count(table, isBlockAndHasNoBlockChildren) == blockCount);
 		return this;
 	}
+
+	markupHeading(firstBlockIdx: number, blockCount: number) : BoxTreeWalker {
+		let doc: BoxTreeWalker = this;
+		this.root();
+		this.nthBlock(firstBlockIdx);
+		// find ancestor that contains the specified number of blocks
+		while (true) {
+			let tmp: BoxTreeWalker = doc.clone();
+			if (tmp.previousSibling().done
+				&& !tmp.parent().done
+				&& count(tmp, isBlockAndHasNoBlockChildren) <= blockCount) {
+				doc = tmp;
+			} else {
+				assertThat(count(doc, isBlockAndHasNoBlockChildren) == blockCount);
+				break;
+			}
+		}
+		doc.renameCurrent(this.H1);
+		// remove all strong within the heading
+		let h1Walker: BoxTreeWalker = doc.subTree();
+		let isStrong: (node?: Box) => boolean = b => b ? this.STRONG == b.props.name : true;
+		while (!h1Walker.firstDescendant(isStrong).done || !h1Walker.firstFollowing(isStrong).done)
+			if (!h1Walker.previousSibling().done)
+				h1Walker.unwrapNextSibling();
+			else if (!h1Walker.parent().done)
+				h1Walker.unwrapFirstChild();
+			else
+				throw new RuntimeException("coding error");
+		// remove all div within the heading
+		h1Walker.root();
+		let isDiv: (node?: Box) => boolean = b => b ? DIV == b.props.name : true;
+		while (!h1Walker.firstDescendant(isDiv).done || !h1Walker.firstFollowing(isDiv).done)
+			h1Walker.renameCurrent(this._SPAN);
+		return doc;
+	}
+
+	H1: QName = new QName({
+		namespace: "http://www.w3.org/1999/xhtml",
+		localPart: "h1",
+		prefix: ""
+	});
+
+	STRONG: QName = new QName({
+		namespace: "http://www.w3.org/1999/xhtml",
+		localPart: "strong",
+		prefix: ""
+	});
+
+	_SPAN: QName = new QName({
+		namespace: "http://www.w3.org/1999/xhtml",
+		localPart: "_span",
+		prefix: ""
+	});
 }
