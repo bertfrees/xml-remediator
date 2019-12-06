@@ -58,6 +58,8 @@ export default class BoxTreeWalker {
     }
     
 	subTree():BoxTreeWalker {
+		if (this.path.length == 0)
+            return this;
 		let fullTree = this;
 		let subTree = new BoxTreeWalker(fullTree.current, (root:Box) => {
             if (this.rootBox != fullTree.current)
