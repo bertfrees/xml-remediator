@@ -16,9 +16,13 @@ function assertThat(test:boolean) {
 }
 
 
-/** Box selection filter */
+/** Box selection filters */
 function isBlockAndHasNoBlockChildren(b?:Box){
 	return b ? b.isBlockAndHasNoBlockChildren : true;
+}
+
+function isReplacedElementOrTextBox(b?: Box) {
+    return b ? b.props.text != null || b.props.isReplacedElement : true;
 }
 
 class Optional<T>{
@@ -349,6 +353,12 @@ export default class BoxTreeWalker {
 			assertThat(!this.firstFollowing(isBlockAndHasNoBlockChildren).done);
 	}
 
+	nthReplacedElementOrTextBox(index: number) {
+		assertThat(!this.firstDescendant(isReplacedElementOrTextBox).done);
+		for (let i = 0; i < index; i++)
+			assertThat(!this.firstFollowing(isReplacedElementOrTextBox).done);
+	}
+
 	count(filter:(b?:Box)=>boolean) {
 		let count = 0;
 		while (!this.firstDescendant(filter).done || !this.firstFollowing(filter).done)
@@ -430,6 +440,26 @@ export default class BoxTreeWalker {
 			h1Walker.renameCurrent(this._SPAN);
 		return doc;
 	}
+
+	removeImage(blockIdx: number, inlineIdx: number) : BoxTreeWalker {
+		this.root();
+		this.nthBlock(blockIdx);
+		if (inlineIdx >= 0) {
+			assertThat(inlineIdx < count(this, isReplacedElementOrTextBox));
+			this.nthReplacedElementOrTextBox(inlineIdx);
+		}
+		assertThat(this.IMG == this.current.props.name);
+		assertThat(this.current.props.isReplacedElement);
+		this.renameCurrent(this._SPAN);
+		return this;
+	}
+
+
+	IMG: QName = new QName({
+		namespace: "http://www.w3.org/1999/xhtml",
+		localPart: "img",
+		prefix: ""
+	});
 
 	H1: QName = new QName({
 		namespace: "http://www.w3.org/1999/xhtml",
